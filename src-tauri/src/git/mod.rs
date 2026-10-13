@@ -7,6 +7,7 @@ pub mod error;
 pub mod health;
 pub mod index;
 pub mod log;
+pub mod rebase;
 pub mod reflog;
 pub mod remote;
 pub mod runner;

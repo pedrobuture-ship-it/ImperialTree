@@ -67,7 +67,17 @@ pub fn mark_resolved(git: &Git, path: &str) -> Result<Executed, GitError> {
 
 pub fn continue_operation(git: &Git) -> Result<Executed, GitError> {
     match operation(git)? {
-        Operation::Rebase => Ok(git.exec_env(&["rebase", "--continue"], None, super::runner::DEFAULT_TIMEOUT, &[("GIT_EDITOR".into(), "true".into())]).and_then(|o| if o.code == 0 { Ok(o) } else { git.run(&["rebase", "--continue"]) })?.executed()),
+        Operation::Rebase => {
+            let out = git.exec_env(&["rebase", "--continue"], None, super::runner::DEFAULT_TIMEOUT, &super::rebase::continue_env(git))?;
+            let still = operation(git)? == Operation::Rebase;
+            if out.code != 0 && !still {
+                return Err(git.run(&["rebase", "--continue"]).err().unwrap_or_else(|| GitError::invalid("rebase failed")));
+            }
+            if !still {
+                super::rebase::cleanup(git);
+            }
+            Ok(out.executed())
+        }
         Operation::Merge => Ok(git.run(&["commit", "--no-edit"])?.executed()),
         Operation::CherryPick => Ok(git.run(&["cherry-pick", "--continue"])?.executed()),
         Operation::Revert => Ok(git.run(&["revert", "--continue"])?.executed()),
