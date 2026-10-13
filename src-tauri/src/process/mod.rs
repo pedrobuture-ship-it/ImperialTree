@@ -1,6 +1,8 @@
 //! Process execution without a shell. Arguments are always passed as separate
 //! `argv` entries, so user input can never be interpreted as shell syntax.
 
+pub mod launch;
+
 use std::io::{Read, Write};
 use std::path::Path;
 use std::process::{Command, Stdio};
