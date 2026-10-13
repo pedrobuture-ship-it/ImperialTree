@@ -1,7 +1,10 @@
 pub mod branch;
 pub mod commit;
+pub mod config;
+pub mod conflict;
 pub mod diff;
 pub mod error;
+pub mod health;
 pub mod index;
 pub mod log;
 pub mod reflog;
