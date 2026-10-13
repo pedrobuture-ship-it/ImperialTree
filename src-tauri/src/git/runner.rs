@@ -72,6 +72,11 @@ impl Git {
         Ok(Git { root })
     }
 
+    /// A handle for commands that run before a repository exists (clone).
+    pub fn from_dir_unchecked(dir: &Path) -> Git {
+        Git { root: dir.to_path_buf() }
+    }
+
     pub fn root(&self) -> &Path {
         &self.root
     }
