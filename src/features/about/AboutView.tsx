@@ -22,7 +22,6 @@ export function AboutView() {
         <div>
           <DataRow label="Stack">React · TypeScript · Tauri 2 · Rust</DataRow>
           <DataRow label="Git backend">system git CLI</DataRow>
-          <DataRow label="License">MIT</DataRow>
           <DataRow label="Git version detected" mono>{env?.gitVersion ?? "not found"}</DataRow>
           <DataRow label="Operating system">{env?.os ?? "…"}</DataRow>
         </div>

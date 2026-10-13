@@ -60,22 +60,100 @@ Design rules:
 - Read-only commands run with `GIT_OPTIONAL_LOCKS=0` so they never touch the index and cannot trigger the file watcher.
 - The app never stores credentials. Authentication stays with your credential helper or SSH agent.
 
-## Requirements
+## Install and run
 
-- Linux with WebKitGTK 4.1 (`webkit2gtk-4.1`) and GTK 3
-- `git` in `PATH`
-- To build: Node.js 20+, a stable Rust toolchain, and the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/#linux)
+Imperial Terminal needs `git` in `PATH` and, on Linux, WebKitGTK 4.1. There are no prebuilt releases yet, so you build it once from source; every route below ends with a normal desktop app.
 
-## Build
+> Tested here: **Arch Linux / Omarchy**. The other distros use the packages Tauri 2 documents for them, but have not been run by me.
+
+### Omarchy / Arch Linux (one command)
+
+```bash
+sudo pacman -S --needed git nodejs npm webkit2gtk-4.1 base-devel openssl librsvg xdotool rustup
+rustup default stable
+
+git clone https://github.com/pedrobuture-ship-it/ImperialTree.git
+cd ImperialTree
+scripts/install-linux.sh
+```
+
+The script builds the release binary and installs it for your user: `~/.local/bin/imperial-terminal`, an icon and a desktop entry. After that it appears in the Omarchy launcher (`Super + Space`, type "Imperial") like any other app. Open a repository from the shell with `imperial-terminal /path/to/repo`.
+
+### Debian / Ubuntu / Linux Mint / Pop!_OS
+
+```bash
+sudo apt update
+sudo apt install -y git curl wget file build-essential nodejs npm \
+  libwebkit2gtk-4.1-dev libssl-dev libxdo-dev libayatana-appindicator3-dev librsvg2-dev
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh   # then restart the shell
+
+git clone https://github.com/pedrobuture-ship-it/ImperialTree.git && cd ImperialTree
+npm install && npm run tauri build
+sudo apt install ./src-tauri/target/release/bundle/deb/*.deb
+```
+
+### Fedora / RHEL-family
+
+```bash
+sudo dnf install -y git curl wget file nodejs npm gcc gcc-c++ make \
+  webkit2gtk4.1-devel openssl-devel libxdo-devel libappindicator-gtk3-devel librsvg2-devel
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+git clone https://github.com/pedrobuture-ship-it/ImperialTree.git && cd ImperialTree
+npm install && npm run tauri build
+sudo dnf install ./src-tauri/target/release/bundle/rpm/*.rpm
+```
+
+### openSUSE
+
+```bash
+sudo zypper install -y git curl wget file nodejs npm libopenssl-devel \
+  webkit2gtk3-devel libxdo-devel libappindicator3-devel librsvg-devel
+sudo zypper install -y -t pattern devel_basis
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+git clone https://github.com/pedrobuture-ship-it/ImperialTree.git && cd ImperialTree
+npm install && npm run tauri build
+sudo zypper install ./src-tauri/target/release/bundle/rpm/*.rpm
+```
+
+### NixOS / Nix
+
+```bash
+nix-shell -p git nodejs rustc cargo pkg-config openssl webkitgtk_4_1 gtk3 libsoup_3 librsvg xdotool
+
+git clone https://github.com/pedrobuture-ship-it/ImperialTree.git && cd ImperialTree
+npm install && npm run tauri build -- --no-bundle
+./src-tauri/target/release/imperial-terminal /path/to/repo
+```
+
+### Any other Linux (AppImage)
+
+```bash
+npm install && npm run tauri build -- --bundles appimage
+chmod +x src-tauri/target/release/bundle/appimage/*.AppImage
+./src-tauri/target/release/bundle/appimage/*.AppImage
+```
+
+On Debian/Ubuntu/Fedora/openSUSE you can also run `scripts/install-linux.sh` instead of installing the `.deb`/`.rpm`; it does a per-user install without `sudo` for the app itself.
+
+### Windows
+
+**Native Windows is not supported yet.** The Tauri shell itself builds on Windows, but the backend still relies on Linux-only pieces: `sh` helper scripts and Unix file permissions for interactive rebase, `xdg-open` for "reveal in file manager", and Linux terminal/editor launchers. I have not built or run it on Windows, so I won't claim it works.
+
+What does work today:
+
+- **WSL 2 + WSLg (Windows 11 / recent Windows 10):** install a Linux distro from the Store, follow the Debian/Ubuntu steps above inside it, and run `imperial-terminal` — the window shows up on the Windows desktop. Open repositories that live inside the WSL filesystem (`~/projects/...`) for good performance.
+
+A native port needs those platform pieces abstracted first; it is on the list.
+
+### Development
 
 ```bash
 npm install
-
-npm run tauri dev            # development
-npm run check                # typecheck + lint + frontend tests
-(cd src-tauri && cargo test) # backend tests
-
-npm run tauri build          # release bundles (AppImage, .deb, .rpm)
+npm run tauri dev             # run with hot reload
+npm run check                 # typecheck + lint + frontend tests
+(cd src-tauri && cargo test)  # backend tests
 ```
 
 Open a repository directly from the shell:

@@ -2,7 +2,6 @@
 name = "imperial-terminal"
 version = "0.1.0"
 description = "A Linux-first Git client that doesn't hide Git."
-license = "MIT"
 authors = ["Imperial Terminal contributors"]
 edition = "2024"
 
