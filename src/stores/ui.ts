@@ -24,6 +24,7 @@ export type Dialog =
   | { kind: "createStash" }
   | { kind: "createWorktree"; branch?: string }
   | { kind: "clone" }
+  | { kind: "addRemote" }
   | { kind: "shortcuts" }
   | { kind: "rebase"; base?: string }
   | { kind: "error"; error: GitError }

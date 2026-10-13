@@ -1,7 +1,7 @@
 import { useUi } from "@/stores/ui";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { ErrorDialog } from "./ErrorDialog";
-import { CloneDialog, CreateBranchDialog, CreateStashDialog, CreateTagDialog, CreateWorktreeDialog, RenameBranchDialog } from "./FormDialogs";
+import { AddRemoteDialog, CloneDialog, CreateBranchDialog, CreateStashDialog, CreateTagDialog, CreateWorktreeDialog, RenameBranchDialog } from "./FormDialogs";
 import { ShortcutsDialog } from "./ShortcutsDialog";
 import { RebaseDialog } from "@/features/rebase/RebaseDialog";
 
@@ -25,6 +25,8 @@ export function DialogHost() {
       return <CreateWorktreeDialog branch={d.branch} />;
     case "clone":
       return <CloneDialog />;
+    case "addRemote":
+      return <AddRemoteDialog />;
     case "shortcuts":
       return <ShortcutsDialog />;
     case "rebase":

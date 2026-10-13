@@ -17,6 +17,7 @@ export const preview = {
   rebase: (name: string) => line("rebase", name),
   commit: (summary: string, description: string, amend: boolean) => line("commit", "-m", summary || "<summary>", ...(description.trim() ? ["-m", description.trim()] : []), ...(amend ? ["--amend"] : [])),
   stash: (message: string, untracked: boolean) => line("stash", "push", ...(untracked ? ["--include-untracked"] : []), ...(message.trim() ? ["-m", message.trim()] : [])),
+  addRemote: (name: string, url: string) => line("remote", "add", name || "<name>", url || "<url>"),
   fetch: (remote: string) => line("fetch", "--prune", remote),
   pull: (remote: string, rebase: boolean) => line("pull", rebase ? "--rebase" : "--ff-only", remote),
   push: (remote: string, branch: string, upstream: boolean) => line("push", ...(upstream ? ["--set-upstream"] : []), remote, branch),

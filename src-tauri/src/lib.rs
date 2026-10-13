@@ -44,6 +44,7 @@ pub fn run() {
             merge_branch,
             rebase_onto,
             list_remotes,
+            add_remote,
             fetch_remote,
             pull_remote,
             push_remote,

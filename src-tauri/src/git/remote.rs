@@ -64,11 +64,10 @@ pub fn push(git: &Git, remote: &str, branch: &str, set_upstream: bool) -> Result
 pub fn add(git: &Git, name: &str, url: &str) -> Result<Executed, GitError> {
     validate_arg(name, "remote name")?;
     validate_arg(url, "remote URL")?;
+    if url.starts_with("ext::") || url.starts_with("fd::") {
+        return Err(GitError::invalid("This transport is not allowed."));
+    }
     Ok(git.run(&["remote", "add", name, url])?.executed())
-}
-
-pub fn clone_args(url: &str, dest: &str) -> Vec<String> {
-    vec!["clone".into(), "--progress".into(), "--".into(), url.into(), dest.into()]
 }
 
 /// Clones outside of any repository, so it does not need a `Git` handle.

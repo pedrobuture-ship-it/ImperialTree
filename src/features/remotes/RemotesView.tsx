@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Cloud, Download, Upload, ArrowDownToLine } from "lucide-react";
+import { Cloud, Download, Upload, ArrowDownToLine, Plus } from "lucide-react";
 import { Page, Empty } from "@/components/ui/Page";
 import { Button } from "@/components/ui/Button";
 import { DataRow, TerminalBadge, TechnicalLabel } from "@/components/ui/Panel";
 import { CommandLine } from "@/features/dialogs/CommandLine";
 import { useRepo } from "@/stores/repo";
+import { useUi } from "@/stores/ui";
 import { api } from "@/lib/api";
 import { preview } from "@/lib/commands";
 import { runOp } from "@/lib/ops";
@@ -14,6 +15,7 @@ export function RemotesView() {
   const remotes = useRepo((s) => s.remotes);
   const branches = useRepo((s) => s.branches);
   const status = useRepo((s) => s.status);
+  const openDialog = useUi((s) => s.openDialog);
   const [busy, setBusy] = useState<string | null>(null);
   const current = status?.branch ?? "";
   const hasUpstream = !!status?.upstream;
@@ -25,7 +27,7 @@ export function RemotesView() {
   };
 
   return (
-    <Page title="Remotes" badge={<TerminalBadge tone="solid">{remotes.length}</TerminalBadge>}>
+    <Page title="Remotes" badge={<TerminalBadge tone="solid">{remotes.length}</TerminalBadge>} actions={<Button variant="primary" small onClick={() => openDialog({ kind: "addRemote" })}><Plus size={13} /> Add remote</Button>}>
       {remotes.length === 0 && <Empty>NO REMOTES CONFIGURED — git remote add origin &lt;url&gt;</Empty>}
       {remotes.map((r) => {
         const remoteBranches = branches.filter((b) => b.remote && b.name.startsWith(`${r.name}/`));

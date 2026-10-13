@@ -199,3 +199,23 @@ export function CloneDialog() {
     </Dialog>
   );
 }
+
+export function AddRemoteDialog() {
+  const root = useRepoRoot();
+  const close = useUi((s) => s.closeDialog);
+  const [name, setName] = useState("origin");
+  const [url, setUrl] = useState("");
+  const submit = async () => {
+    close();
+    await runOp(preview.addRemote(name, url), () => api.addRemote(root, name.trim(), url.trim()), { success: `Added remote ${name}` });
+  };
+  return (
+    <Dialog title="Add remote" onClose={close} footer={<><Button onClick={close}>Cancel</Button><Button variant="primary" disabled={!name.trim() || !url.trim()} onClick={() => void submit()}>Add remote</Button></>}>
+      <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); void submit(); }}>
+        <Field label="Name"><Input autoFocus value={name} onChange={(e) => setName(e.target.value)} className="mono" /></Field>
+        <Field label="URL" hint="HTTPS or SSH. Nothing is contacted until you fetch."><Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="git@github.com:user/project.git" className="mono" /></Field>
+        <CommandLine command={preview.addRemote(name.trim(), url.trim())} />
+      </form>
+    </Dialog>
+  );
+}

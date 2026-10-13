@@ -204,6 +204,12 @@ pub async fn list_remotes(state: State<'_, AppState>, root: String) -> Result<Ve
 }
 
 #[tauri::command]
+pub async fn add_remote(state: State<'_, AppState>, root: String, name: String, url: String) -> Result<Executed, GitError> {
+    let g = state.git(&root)?;
+    blocking(move || remote::add(&g, &name, &url)).await
+}
+
+#[tauri::command]
 pub async fn fetch_remote(state: State<'_, AppState>, root: String, remote: String) -> Result<Executed, GitError> {
     let g = state.git(&root)?;
     blocking(move || remote::fetch(&g, &remote)).await

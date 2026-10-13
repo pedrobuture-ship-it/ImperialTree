@@ -40,6 +40,7 @@ export const api = {
   merge: (root: string, name: string) => invoke<T.Executed>("merge_branch", { root, name }),
   rebaseOnto: (root: string, name: string) => invoke<T.Executed>("rebase_onto", { root, name }),
   remotes: (root: string) => invoke<T.Remote[]>("list_remotes", { root }),
+  addRemote: (root: string, name: string, url: string) => invoke<T.Executed>("add_remote", { root, name, url }),
   fetch: (root: string, remote: string) => invoke<T.Executed>("fetch_remote", { root, remote }),
   pull: (root: string, remote: string, rebase: boolean) => invoke<T.Executed>("pull_remote", { root, remote, rebase }),
   push: (root: string, remote: string, branch: string, setUpstream: boolean) => invoke<T.Executed>("push_remote", { root, remote, branch, setUpstream }),
