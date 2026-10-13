@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/Button";
 import { useRepo } from "@/stores/repo";
 import { api, toGitError } from "@/lib/api";
 import { hunkPatch, parseDiff, type ParsedDiff } from "@/lib/diff";
-import { confirmDestructive, runOp } from "@/lib/ops";
+import { confirmDestructive, runAction, runOp } from "@/lib/ops";
+import { useSettings } from "@/stores/settings";
 import { statusLetter, statusTone } from "@/lib/files";
 import { cn } from "@/lib/cn";
 import { DiffView, type HunkAction } from "./DiffView";
@@ -56,7 +57,15 @@ export function FileDiffPanel({ className }: { className?: string }) {
     [diff, root],
   );
 
-  const actions: HunkAction[] | undefined = !selection || selection.untracked ? undefined : selection.staged ? [{ label: "Unstage hunk", run: (i) => hunkOp(i, "unstage") }] : [{ label: "Stage hunk", run: (i) => hunkOp(i, "stage") }, { label: "Discard hunk", danger: true, run: (i) => hunkOp(i, "discard") }];
+  const editor = useSettings((s) => s.editor);
+  const openAtLine: HunkAction = {
+    label: "Open at line",
+    run: (i) => {
+      const line = Number(/\+(\d+)/.exec(diff.hunks[i]?.header ?? "")?.[1] ?? 1);
+      if (selection) void runAction(() => api.openInEditor(root, editor ?? undefined, selection.path, line));
+    },
+  };
+  const actions: HunkAction[] | undefined = !selection ? undefined : selection.untracked ? [openAtLine] : selection.staged ? [openAtLine, { label: "Unstage hunk", run: (i) => hunkOp(i, "unstage") }] : [openAtLine, { label: "Stage hunk", run: (i) => hunkOp(i, "stage") }, { label: "Discard hunk", danger: true, run: (i) => hunkOp(i, "discard") }];
 
   const idx = selection ? list.findIndex((e) => e.path === selection.path) : -1;
   const move = (d: number) => {

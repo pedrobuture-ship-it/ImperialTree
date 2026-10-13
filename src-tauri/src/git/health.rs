@@ -105,8 +105,12 @@ pub fn analyze(git: &Git) -> Result<Health, GitError> {
         h.large_files = parse_ls_tree_sizes(&tree, 1024 * 1024);
     }
 
-    let fsck = git.probe(&["fsck", "--no-progress", "--dangling", "--no-reflogs"])?;
-    h.dangling = String::from_utf8_lossy(&fsck.stdout).lines().filter(|l| l.starts_with("dangling ")).count() as u32;
+    // fsck walks every object; on huge repositories it can exceed our timeout, which
+    // must not make the whole report fail.
+    match git.probe(&["fsck", "--no-progress", "--dangling", "--no-reflogs"]) {
+        Ok(fsck) => h.dangling = String::from_utf8_lossy(&fsck.stdout).lines().filter(|l| l.starts_with("dangling ")).count() as u32,
+        Err(_) => h.warnings.push("Dangling-object check was skipped (git fsck took too long).".into()),
+    }
     h.uncommitted = super::status::status(git)?.entries.len() as u32;
 
     if !h.large_files.is_empty() {
