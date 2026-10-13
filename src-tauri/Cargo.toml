@@ -1,0 +1,32 @@
+[package]
+name = "imperial-terminal"
+version = "0.1.0"
+description = "A Linux-first Git client that doesn't hide Git."
+license = "MIT"
+authors = ["Imperial Terminal contributors"]
+edition = "2024"
+
+[dependencies]
+notify = "8.2.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2.8.2"
+tauri-plugin-opener = "2.7.1"
+wait-timeout = "0.2"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dev-dependencies]
+tempfile = "3.27.0"
+
+[lib]
+name = "imperial_terminal_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
