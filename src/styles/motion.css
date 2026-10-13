@@ -1,0 +1,35 @@
+@keyframes it-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes it-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+@keyframes it-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+@keyframes it-flash {
+  0% { background: rgba(54, 209, 224, 0.22); }
+  100% { background: transparent; }
+}
+
+.anim-in { animation: it-fade-in 160ms var(--ease) both; }
+.anim-pulse { animation: it-pulse 1.6s ease-in-out infinite; }
+.anim-flash { animation: it-flash 700ms ease-out both; }
+.anim-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(54, 209, 224, 0.5), transparent);
+  animation: it-sweep 1.1s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,35 @@
+@theme {
+  --color-void: #07090c;
+  --color-base: #0a0d11;
+  --color-panel: #0e1217;
+  --color-raised: #131920;
+  --color-line: #1b232c;
+  --color-line-strong: #2a3541;
+  --color-ink: #dfe4ea;
+  --color-ink-dim: #9aa6b2;
+  --color-ink-faint: #5d6a77;
+  --color-cyan: #36d1e0;
+  --color-cyan-dim: #1d7f8a;
+  --color-alert: #ee4b55;
+  --color-alert-dim: #5b1d22;
+  --color-ok: #3ddc84;
+  --color-ok-dim: #17472e;
+  --color-warn: #e8a13a;
+  --color-warn-dim: #523a14;
+  --font-sans: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+:root {
+  --radius: 2px;
+  --grid: rgba(54, 209, 224, 0.035);
+  --focus: 0 0 0 1px var(--color-cyan);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* graph lanes */
+  --lane-0: #ee4b55;
+  --lane-1: #4f8cff;
+  --lane-2: #36d1e0;
+  --lane-3: #e8a13a;
+  --lane-4: #b073ff;
+  --lane-5: #3ddc84;
+}
