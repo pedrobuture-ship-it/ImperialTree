@@ -14,10 +14,10 @@ pub fn file_diff(git: &Git, path: &str, staged: bool, untracked: bool) -> Result
         if is_binary_or_empty(git, path) {
             return Ok(String::new());
         }
-        let out = git.run_allow(&["diff", "--no-index", "--no-color", "--", "/dev/null", path], &[1])?;
+        let out = git.run_allow(&["diff", "--no-index", "--no-color", "--no-ext-diff", "--no-textconv", "--", "/dev/null", path], &[1])?;
         return Ok(out.text());
     }
-    let mut args = vec!["diff", "--no-color", "--find-renames"];
+    let mut args = vec!["diff", "--no-color", "--no-ext-diff", "--no-textconv", "--find-renames"];
     if staged {
         args.push("--cached");
     }

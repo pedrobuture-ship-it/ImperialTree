@@ -100,6 +100,10 @@ impl Git {
     pub fn exec_env(&self, args: &[&str], stdin: Option<&[u8]>, timeout: Duration, extra_env: &[(String, String)]) -> Result<Output, GitError> {
         let owned: Vec<String> = args.iter().map(|s| s.to_string()).collect();
         let command = display_command(&owned);
+        // Repository config is untrusted: never let it start a filesystem monitor
+        // or an external diff tool just because we ran `git status` or `git diff`.
+        let mut owned = owned;
+        owned.splice(0..0, ["-c".to_string(), "core.fsmonitor=false".to_string()]);
         let mut env = Self::base_env();
         env.extend_from_slice(extra_env);
         let spec = Spec { program: "git", args: &owned, cwd: &self.root, env: &env, stdin, timeout };
@@ -212,6 +216,21 @@ mod tests {
         assert!(!g.root().join("pwned2").exists());
         let subject = g.text(&["log", "-1", "--format=%s"]).unwrap();
         assert!(subject.contains("$(touch pwned)"));
+    }
+
+    #[test]
+    fn hostile_repo_config_is_not_executed() {
+        let (_d, g) = testutil::init_repo();
+        testutil::write(&g, "a.txt", "1");
+        testutil::commit_all(&g, "init");
+        let marker = g.root().join("pwned-fsmonitor");
+        g.run(&["config", "core.fsmonitor", &format!("touch {}", marker.display())]).unwrap();
+        g.run(&["config", "diff.external", &format!("touch {}", g.root().join("pwned-diff").display())]).unwrap();
+        testutil::write(&g, "a.txt", "2");
+        let _ = crate::git::status::status(&g).unwrap();
+        let _ = crate::git::diff::file_diff(&g, "a.txt", false, false).unwrap();
+        assert!(!marker.exists(), "core.fsmonitor must not run");
+        assert!(!g.root().join("pwned-diff").exists(), "diff.external must not run");
     }
 
     #[test]

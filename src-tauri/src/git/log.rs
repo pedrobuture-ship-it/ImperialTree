@@ -179,7 +179,7 @@ pub fn commit_details(git: &Git, hash: &str) -> Result<CommitDetails, GitError> 
 
 pub fn commit_diff(git: &Git, hash: &str) -> Result<String, GitError> {
     validate_arg(hash, "commit")?;
-    Ok(git.text(&["show", "--format=", "--no-color", "--diff-merges=first-parent", "--find-renames", hash])?)
+    Ok(git.text(&["show", "--format=", "--no-color", "--no-ext-diff", "--no-textconv", "--diff-merges=first-parent", "--find-renames", hash])?)
 }
 
 #[cfg(test)]
