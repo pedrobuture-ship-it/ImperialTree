@@ -1,4 +1,5 @@
 mod commands;
+mod devtools;
 mod filesystem;
 mod git;
 mod process;
@@ -10,6 +11,11 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .setup(|_app| {
+            #[cfg(debug_assertions)]
+            devtools::attach(_app);
+            Ok(())
+        })
         .manage(AppState::default())
         .manage(filesystem::watcher::WatcherState::default())
         .invoke_handler(tauri::generate_handler![
@@ -77,6 +83,8 @@ pub fn run() {
             reveal_in_file_manager,
             load_state,
             save_state,
+            devtools::debug_report,
+            initial_repository,
             watch_repository,
             unwatch_repository,
         ])
