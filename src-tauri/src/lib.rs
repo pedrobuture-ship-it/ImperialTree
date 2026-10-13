@@ -11,6 +11,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .manage(AppState::default())
+        .manage(filesystem::watcher::WatcherState::default())
         .invoke_handler(tauri::generate_handler![
             open_repository,
             clone_repository,
@@ -76,6 +77,8 @@ pub fn run() {
             reveal_in_file_manager,
             load_state,
             save_state,
+            watch_repository,
+            unwatch_repository,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Imperial Terminal");

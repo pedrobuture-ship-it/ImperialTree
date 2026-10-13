@@ -2,7 +2,7 @@
 //! UI is working with and resolves it through `AppState`, which only knows
 //! repositories that were explicitly opened by the user.
 
-use crate::filesystem::{ssh, store};
+use crate::filesystem::{ssh, store, watcher};
 use crate::git::{
     branch, commit, config, conflict, diff, health, index, log, rebase, reflog, remote, stash, status, tag, worktree, Executed, Git, GitError,
 };
@@ -12,7 +12,7 @@ use serde::Serialize;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use tauri::State;
+use tauri::{Emitter, State};
 
 #[derive(Default, Clone)]
 pub struct AppState {
@@ -456,3 +456,29 @@ pub async fn save_state(json: String) -> Result<(), GitError> {
     store::save(&json).map_err(GitError::io)
 }
 
+
+#[tauri::command]
+pub async fn watch_repository(app: tauri::AppHandle, state: State<'_, AppState>, watcher: State<'_, watcher::WatcherState>, root: String) -> Result<(), GitError> {
+    let g = state.git(&root)?;
+    let gd = blocking({
+        let g = g.clone();
+        move || g.text(&["rev-parse", "--path-format=absolute", "--git-dir"])
+    })
+    .await?;
+    let git_dir = PathBuf::from(gd.trim());
+    let path = g.root().to_path_buf();
+    let payload = root.clone();
+    let handle = watcher::start(path, git_dir, move || {
+        let _ = app.emit("repo-changed", payload.clone());
+    })
+    .map_err(GitError::io)?;
+    // Replacing the previous handle stops the old watcher thread.
+    *watcher.0.lock().map_err(|_| GitError::io("watcher state poisoned"))? = Some(handle);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn unwatch_repository(watcher: State<'_, watcher::WatcherState>) -> Result<(), GitError> {
+    *watcher.0.lock().map_err(|_| GitError::io("watcher state poisoned"))? = None;
+    Ok(())
+}
