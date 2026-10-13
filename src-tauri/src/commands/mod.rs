@@ -276,9 +276,9 @@ pub async fn push_tag(state: State<'_, AppState>, root: String, remote: String, 
 }
 
 #[tauri::command]
-pub async fn list_worktrees(state: State<'_, AppState>, root: String) -> Result<Vec<worktree::Worktree>, GitError> {
+pub async fn list_worktrees(state: State<'_, AppState>, root: String, with_status: bool) -> Result<Vec<worktree::Worktree>, GitError> {
     let g = state.git(&root)?;
-    blocking(move || worktree::list(&g)).await
+    blocking(move || worktree::list(&g, with_status)).await
 }
 
 #[tauri::command]

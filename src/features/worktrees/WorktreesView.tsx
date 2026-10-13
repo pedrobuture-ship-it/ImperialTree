@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { FolderGit2, Lock, Plus } from "lucide-react";
+import type { Worktree } from "@/types/git";
 import { Page, Empty } from "@/components/ui/Page";
 import { Button } from "@/components/ui/Button";
 import { StatusIndicator, TechnicalLabel, TerminalBadge } from "@/components/ui/Panel";
@@ -12,7 +14,18 @@ import { tildePath } from "@/lib/format";
 
 export function WorktreesView() {
   const root = useRepo((s) => s.repo?.root ?? "");
-  const worktrees = useRepo((s) => s.worktrees);
+  const listed = useRepo((s) => s.worktrees);
+  const revision = useRepo((s) => s.revision);
+  const [withStatus, setWithStatus] = useState<Worktree[] | null>(null);
+  // The shared list skips per-worktree `git status`; this screen asks for it.
+  useEffect(() => {
+    let live = true;
+    api.worktrees(root, true).then((w) => live && setWithStatus(w)).catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [root, revision]);
+  const worktrees = withStatus ?? listed;
   const openRepo = useRepo((s) => s.open);
   const openDialog = useUi((s) => s.openDialog);
   const hasPrunable = worktrees.some((w) => w.prunable);

@@ -41,10 +41,12 @@ pub fn parse_worktrees(raw: &str) -> Vec<Worktree> {
     out
 }
 
-pub fn list(git: &Git) -> Result<Vec<Worktree>, GitError> {
+/// `with_status` runs `git status` inside every worktree, which is costly on big
+/// repositories, so only the Worktrees screen asks for it.
+pub fn list(git: &Git, with_status: bool) -> Result<Vec<Worktree>, GitError> {
     let mut wts = parse_worktrees(&git.text(&["worktree", "list", "--porcelain"])?);
     for w in &mut wts {
-        if w.bare || w.prunable {
+        if !with_status || w.bare || w.prunable {
             continue;
         }
         w.dirty = Git::discover(std::path::Path::new(&w.path))
@@ -78,7 +80,7 @@ pub fn add(git: &Git, path: &str, branch: &str, create: bool) -> Result<Executed
 
 pub fn remove(git: &Git, path: &str, force: bool) -> Result<Executed, GitError> {
     // Only worktrees Git itself lists may be removed, and never the main one.
-    let known = list(git)?;
+    let known = list(git, true)?;
     let target = known.iter().find(|w| w.path == path).ok_or_else(|| GitError::invalid("Unknown worktree."))?;
     if target.main {
         return Err(GitError::invalid("The main worktree cannot be removed."));
@@ -118,7 +120,7 @@ mod tests {
         let dest = dest.to_str().unwrap();
         let e = add(&g, dest, "feature/auth", true).unwrap();
         assert!(e.command.starts_with("git worktree add -b feature/auth"));
-        let l = list(&g).unwrap();
+        let l = list(&g, true).unwrap();
         assert_eq!(l.len(), 2);
         assert_eq!(l[1].branch.as_deref(), Some("feature/auth"));
         assert_eq!(l[1].dirty, Some(0));
@@ -126,6 +128,6 @@ mod tests {
         assert!(remove(&g, "/etc", true).is_err());
         let canon = l[1].path.clone();
         remove(&g, &canon, false).unwrap();
-        assert_eq!(list(&g).unwrap().len(), 1);
+        assert_eq!(list(&g, false).unwrap().len(), 1);
     }
 }

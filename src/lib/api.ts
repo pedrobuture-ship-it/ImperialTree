@@ -52,7 +52,7 @@ export const api = {
   createTag: (root: string, name: string, target?: string, message?: string) => invoke<T.Executed>("create_tag", { root, name, target: target ?? null, message: message ?? null }),
   deleteTag: (root: string, name: string) => invoke<T.Executed>("delete_tag", { root, name }),
   pushTag: (root: string, remote: string, name: string) => invoke<T.Executed>("push_tag", { root, remote, name }),
-  worktrees: (root: string) => invoke<T.Worktree[]>("list_worktrees", { root }),
+  worktrees: (root: string, withStatus = false) => invoke<T.Worktree[]>("list_worktrees", { root, withStatus }),
   addWorktree: (root: string, path: string, branch: string, create: boolean) => invoke<T.Executed>("add_worktree", { root, path, branch, create }),
   removeWorktree: (root: string, path: string, force: boolean) => invoke<T.Executed>("remove_worktree", { root, path, force }),
   pruneWorktrees: (root: string) => invoke<T.Executed>("prune_worktrees", { root }),
