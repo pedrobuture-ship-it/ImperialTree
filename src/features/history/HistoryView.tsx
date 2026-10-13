@@ -123,7 +123,7 @@ export function HistoryView() {
                 <DataRow label="Date">{new Date(details.commit.timestamp * 1000).toLocaleString()} · {relativeTime(details.commit.timestamp)}</DataRow>
                 <DataRow label="Parents" mono>{details.commit.parents.map((p) => p.slice(0, 7)).join(" ") || "root commit"}</DataRow>
                 <DataRow label="Branches">{details.branches.join(", ") || "—"}</DataRow>
-                <DataRow label="Changed">{details.files.length} files · <span className="text-ok">+{details.insertions}</span> <span className="text-alert">−{details.deletions}</span></DataRow>
+                <DataRow label="Changed">{details.files.length} file{details.files.length === 1 ? "" : "s"} · <span className="text-ok">+{details.insertions}</span> <span className="text-alert">−{details.deletions}</span></DataRow>
               </div>
               <div>
                 <TechnicalLabel>Files</TechnicalLabel>

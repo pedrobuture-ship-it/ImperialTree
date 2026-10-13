@@ -35,8 +35,8 @@ function ConfigRow({ cfg, root, hasRepo, onSaved }: { cfg: ConfigValue; root: st
         <Input value={value} onChange={(e) => setValue(e.target.value)} placeholder={scope === "local" ? (cfg.global ?? "not set") : "not set"} className="mono" aria-label={cfg.key} />
         <Button variant="primary" disabled={value.trim() === (current ?? "")} onClick={() => void save()}>Save</Button>
       </div>
-      <div className="flex items-center gap-3 pl-[188px] text-[11px] text-ink-faint">
-        <span>Writes to <b className="text-ink-dim">{scope === "global" ? "~/.gitconfig" : ".git/config"}</b></span>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pl-[188px] text-[11px] text-ink-faint">
+        <span className="whitespace-nowrap">Writes to <b className="text-ink-dim">{scope === "global" ? "~/.gitconfig" : ".git/config"}</b></span>
         <span className="mono">{cmd}</span>
         {cfg.effective && <TerminalBadge>effective: {cfg.effective}</TerminalBadge>}
       </div>

@@ -3,6 +3,7 @@ import { CommandPanel, DangerPanel, StatusIndicator, TechnicalLabel } from "@/co
 import { Button, TextArea } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { useRepo } from "@/stores/repo";
+import { useUi } from "@/stores/ui";
 import { api } from "@/lib/api";
 import { runAction, runOp } from "@/lib/ops";
 import { hasMarkers, parseConflicts, resolveSegments, type Resolution } from "@/lib/conflicts";
@@ -22,6 +23,12 @@ export function ConflictsView() {
   const [choices, setChoices] = useState<Record<number, Resolution | undefined>>({});
   const [result, setResult] = useState("");
   const [edited, setEdited] = useState(false);
+
+  const setView = useUi((s) => s.setView);
+  const finished = operation === "none" && conflicted.length === 0;
+  useEffect(() => {
+    if (finished) setView("overview");
+  }, [finished, setView]);
 
   useEffect(() => {
     if (!path || !conflicted.some((c) => c.path === path)) setPath(conflicted[0]?.path ?? null);
