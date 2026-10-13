@@ -1,3 +1,5 @@
+pub mod branch;
+pub mod diff;
 pub mod error;
 pub mod log;
 pub mod runner;
