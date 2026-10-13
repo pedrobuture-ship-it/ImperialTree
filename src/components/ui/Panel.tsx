@@ -21,7 +21,7 @@ export function CommandPanel({
   bodyClassName?: string;
 }) {
   return (
-    <section className={cn("panel bracketed flex min-h-0 flex-col", className)}>
+    <section className={cn("panel bracketed flex min-h-0 min-w-0 flex-col", className)}>
       {title !== undefined && (
         <header className="panel-head">
           <span className="tech-title">{title}</span>

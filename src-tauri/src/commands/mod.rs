@@ -482,3 +482,9 @@ pub async fn unwatch_repository(watcher: State<'_, watcher::WatcherState>) -> Re
     *watcher.0.lock().map_err(|_| GitError::io("watcher state poisoned"))? = None;
     Ok(())
 }
+
+/// A folder passed on the command line (`imperial-terminal /path/to/repo`).
+#[tauri::command]
+pub fn initial_repository() -> Option<String> {
+    std::env::args().nth(1).filter(|a| !a.starts_with('-') && std::path::Path::new(a).is_dir())
+}

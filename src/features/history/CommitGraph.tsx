@@ -121,7 +121,7 @@ export function CommitGraph({ commits, selected, onSelect, onContextMenu, onNear
               style={{ top: i * rowHeight, height: rowHeight }}
             >
               <GraphCell row={row} prev={rows[i - 1]} height={rowHeight} width={graphW} selected={isSel} />
-              <div className="flex min-w-0 flex-1 items-center gap-1.5">
+              <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
                 {c.refs.map((r) => (
                   <RefBadge key={r.kind + r.name} r={r} />
                 ))}

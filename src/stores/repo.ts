@@ -80,7 +80,23 @@ export const useRepo = create<RepoState>((set, get) => ({
     ]);
     if (get().repo?.root !== root) return; // repository changed while loading
     const sel = get().selection;
-    const stillThere = sel && status?.entries.some((e) => e.path === sel.path);
+    const selEntry = sel ? status?.entries.find((e) => e.path === sel.path) : undefined;
+    // Keep the selection when the file is still listed; flip staged/unstaged if it moved between them.
+    const kept: Selection | null =
+      sel && selEntry
+        ? selEntry.untracked
+          ? { path: sel.path, staged: false, untracked: true }
+          : sel.staged && selEntry.index !== "."
+            ? sel
+            : !sel.staged && selEntry.worktree !== "."
+              ? sel
+              : { path: sel.path, staged: selEntry.index !== "." && selEntry.worktree === ".", untracked: false }
+        : null;
+    // Like the reference layout, open with the first change selected.
+    const first = status?.entries.find((e) => !e.conflicted);
+    const auto: Selection | null = first ? { path: first.path, staged: !first.untracked && first.index !== "." && first.worktree === ".", untracked: first.untracked } : null;
+    const firstStaged = status?.entries.find((e) => !e.conflicted && !e.untracked && e.index !== ".");
+    const initial: Selection | null = firstStaged ? { path: firstStaged.path, staged: true, untracked: false } : auto;
     set((s) => ({
       status,
       branches,
@@ -90,7 +106,7 @@ export const useRepo = create<RepoState>((set, get) => ({
       worktrees,
       operation,
       summary,
-      selection: stillThere ? sel : null,
+      selection: kept ?? initial,
       revision: s.revision + 1,
       repo: s.repo && status ? { ...s.repo, branch: status.branch } : s.repo,
     }));

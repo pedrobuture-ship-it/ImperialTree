@@ -51,7 +51,7 @@ export function Sidebar() {
   const worktrees = useRepo((s) => s.worktrees);
   const setView = useUi((s) => s.setView);
   const menu = useContextMenu();
-  const local = branches.filter((b) => b.remote === false);
+  const local = branches.filter((b) => !b.remote).sort((a, b) => Number(b.current) - Number(a.current) || b.timestamp - a.timestamp);
   const changes = status?.entries.length ?? 0;
   const conflicts = status?.entries.filter((e) => e.conflicted).length ?? 0;
 

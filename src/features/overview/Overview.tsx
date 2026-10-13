@@ -33,8 +33,8 @@ export function Overview() {
   const cm = useCommitMenu();
 
   return (
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_minmax(0,0.78fr)] gap-3 p-3">
-      <CommandPanel title="Repository Overview" bodyClassName="flex items-stretch gap-0 px-4 py-3">
+    <div className="grid h-full min-h-0 min-w-[1000px] grid-rows-[auto_minmax(0,1fr)_minmax(0,0.78fr)] gap-3 overflow-x-auto p-3">
+      <CommandPanel title="Repository Overview" bodyClassName="flex items-stretch gap-0 overflow-hidden whitespace-nowrap px-4 py-3">
         <div className="mr-8 flex items-center gap-4">
           <GitBranch size={34} className="text-ink-faint" strokeWidth={1.4} />
           <div>
@@ -63,7 +63,7 @@ export function Overview() {
           {cm.element}
         </CommandPanel>
         <CommitComposer />
-        <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_minmax(0,0.8fr)] gap-3">
+        <div className="grid min-h-0 min-w-0 grid-rows-[minmax(0,1fr)_minmax(0,0.8fr)] gap-3">
           <CommandPreview />
           <MiniTabs />
         </div>

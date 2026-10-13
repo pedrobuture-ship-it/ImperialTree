@@ -40,7 +40,7 @@ export function MiniTabs({ className }: { className?: string }) {
               <div key={w.path} className="flex items-center gap-2 px-3 py-1.5 text-[12px]">
                 <StatusIndicator tone={w.main ? "ok" : "idle"} />
                 <span className="w-24 shrink-0 truncate">{w.path.split("/").pop()}</span>
-                <span className="mono min-w-0 flex-1 truncate text-[11px] text-ink-faint">{tildePath(w.path)}</span>
+                <span className="mono min-w-0 flex-1 truncate text-[11px] text-ink-faint" title={w.path}>{tildePath(w.path)}</span>
                 <span className="mono text-[11px] text-ink-dim">{w.branch ?? "detached"}</span>
               </div>
             ))}

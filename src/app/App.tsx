@@ -25,6 +25,7 @@ import { ConflictsView } from "@/features/conflicts/ConflictsView";
 import { useUi, type View } from "@/stores/ui";
 import { useRepo } from "@/stores/repo";
 import { useSettings } from "@/stores/settings";
+import { api } from "@/lib/api";
 import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 import { useRepoWatcher } from "@/hooks/useRepoWatcher";
 
@@ -61,7 +62,10 @@ export function App() {
   useRepoWatcher();
 
   useEffect(() => {
-    void load();
+    void load().then(async () => {
+      const initial = await api.initialRepository().catch(() => null);
+      if (initial) await useRepo.getState().open(initial);
+    });
   }, [load]);
 
   let body: React.ReactNode;

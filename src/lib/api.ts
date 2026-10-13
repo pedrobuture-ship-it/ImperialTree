@@ -77,6 +77,7 @@ export const api = {
   openTerminal: (root: string, terminal?: string) => invoke<void>("open_terminal", { root, terminal: terminal ?? null }),
   openInEditor: (root: string, editor?: string, path?: string, line?: number) => invoke<void>("open_in_editor", { root, editor: editor ?? null, path: path ?? null, line: line ?? null }),
   reveal: (root: string, path?: string) => invoke<void>("reveal_in_file_manager", { root, path: path ?? null }),
+  initialRepository: () => invoke<string | null>("initial_repository"),
   loadState: () => invoke<string>("load_state"),
   saveState: (json: string) => invoke<void>("save_state", { json }),
 };
