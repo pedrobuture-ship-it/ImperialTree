@@ -174,7 +174,7 @@ mod tests {
     }
 
     #[test]
-    fn preview_matches_prompt_example() {
+    fn create_args_match_git_switch_syntax() {
         assert_eq!(create_args("feature/example", Some("main")).join(" "), "switch -c feature/example main");
     }
 }
