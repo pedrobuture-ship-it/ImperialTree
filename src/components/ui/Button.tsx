@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Tooltip } from "./Tooltip";
 
@@ -12,7 +12,7 @@ export function Button({
   className,
   children,
   ...rest
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; icon?: boolean; small?: boolean; tip?: string }) {
+}: ComponentProps<"button"> & { variant?: Variant; icon?: boolean; small?: boolean; tip?: string }) {
   const v = { default: "", primary: "btn-primary", danger: "btn-danger", ghost: "btn-ghost" }[variant];
   const btn = (
     <button type="button" {...rest} className={cn("btn", v, icon && "btn-icon", small && "btn-sm", className)}>
@@ -22,15 +22,15 @@ export function Button({
   return tip ? <Tooltip text={tip}>{btn}</Tooltip> : btn;
 }
 
-export function Input({ className, ...rest }: InputHTMLAttributes<HTMLInputElement>) {
+export function Input({ className, ...rest }: ComponentProps<"input">) {
   return <input spellCheck={false} autoComplete="off" {...rest} className={cn("input", className)} />;
 }
 
-export function TextArea({ className, ...rest }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+export function TextArea({ className, ...rest }: ComponentProps<"textarea">) {
   return <textarea spellCheck={false} {...rest} className={cn("input", className)} />;
 }
 
-export function Select({ className, children, ...rest }: SelectHTMLAttributes<HTMLSelectElement> & { children: ReactNode }) {
+export function Select({ className, children, ...rest }: ComponentProps<"select"> & { children: ReactNode }) {
   return (
     <select {...rest} className={cn("input", className)}>
       {children}
